@@ -32,19 +32,44 @@ public class ProcessControllerTest {
         //Le pasamos el puerto
         String address = "http://localhost:"+port+"/api/v1/process-step1";
 
-        //Datos a testear
-        //String fullNameRaw = "Blanca de Pedro";
-        //String dniRaw = "52060398J";
-        //String telefonoRaw = "646513445";
-        ProcessController.DataRequest dataPrueba = new ProcessController.DataRequest("Blanca de Pedro", "52060398J", "646513445");
         
+        ProcessController.DataRequest dataPrueba = new ProcessController.DataRequest("Blanca de Pedro", "52060398J", "646513445");
         //Request
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<ProcessController.DataRequest> request = new HttpEntity<>(dataPrueba, headers);
         //Response
         ResponseEntity<String> result = this.restTemplate.postForEntity(address, request, String.class);
+		
+        then(result.getBody()).isEqualTo("{\"result\":\"OK\"}");
         then(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+        }
+
+    @Test
+    public void given_app_when_login_using_right_credencials_then_ko() throws Exception{
+        
+        //Le pasamos el puerto
+        String address = "http://localhost:"+port+"/api/v1/process-step1";
+
+        ProcessController.DataRequest dataErrorDNI = new ProcessController.DataRequest("Blanca de Pedro", "123456789", "646513445");
+        ProcessController.DataRequest dataErrorTelf = new ProcessController.DataRequest("Blanca de Pedro", "52060398J", "AAA513445");
+        //Request
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        
+        HttpEntity<ProcessController.DataRequest> requestErrorDNI = new HttpEntity<>(dataErrorDNI, headers);
+        HttpEntity<ProcessController.DataRequest> requestErrorTelf = new HttpEntity<>(dataErrorTelf, headers);
+        //Response
+        
+		ResponseEntity<String> resultErrorDNI = this.restTemplate.postForEntity(address, requestErrorDNI, String.class);
+        ResponseEntity<String> resulttErrorTelf = this.restTemplate.postForEntity(address, requestErrorTelf, String.class);
+        
+        
+        then(resultErrorDNI.getBody()).isEqualTo("{\"result\":\"KO\"}");
+        then(resulttErrorTelf.getBody()).isEqualTo("{\"result\":\"KO\"}");
+        
+        then(resultErrorDNI.getStatusCode()).isEqualTo(HttpStatus.OK);
+        then(resulttErrorTelf.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
@@ -58,6 +83,27 @@ public class ProcessControllerTest {
             datosCorrectos.add("fullName", "Blanca de Pedro");
             datosCorrectos.add("dni", "52060398J");
             datosCorrectos.add("telefono", "646513445");
+            
+            //Request
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+            HttpEntity<MultiValueMap<String, String>> requestCorrecto = new HttpEntity<>(datosCorrectos, headers);
+             //Response
+            ResponseEntity<String> resultCorrecto = this.restTemplate.postForEntity(address, requestCorrecto, String.class);
+            
+            then(resultCorrecto.getBody()).contains("Muchas gracias por enviar los datos");
+
+            then(resultCorrecto.getStatusCode()).isEqualTo(HttpStatus.OK);
+            
+    }
+
+    @Test
+    public void given_app_when_login_using_right_credentials_then_ko_legacy() throws Exception{
+            
+            //Le pasamos el puerto
+            String address = "http://localhost:" + port + "/api/v1/process-step1-legacy";
+
 
             //El nombre introducido es incorrecto
             MultiValueMap<String, String> datosNombreIncorrecto = new LinkedMultiValueMap<>();
@@ -87,25 +133,23 @@ public class ProcessControllerTest {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-            HttpEntity<MultiValueMap<String, String>> requestCorrecto = new HttpEntity<>(datosCorrectos, headers);
             HttpEntity<MultiValueMap<String, String>> requestErrorNombre = new HttpEntity<>(datosNombreIncorrecto, headers);
             HttpEntity<MultiValueMap<String, String>> requestVacioNombre = new HttpEntity<>(datosNombreNull, headers);
             HttpEntity<MultiValueMap<String, String>> requestErrorDNI = new HttpEntity<>(datosDNIIncorrecto, headers);
             HttpEntity<MultiValueMap<String, String>> requestErrorTelefono = new HttpEntity<>(datosNumeroIncorrecto, headers);
             //Response
-            ResponseEntity<String> resultCorrecto = this.restTemplate.postForEntity(address, requestCorrecto, String.class);
             ResponseEntity<String> resultErrorNombre = this.restTemplate.postForEntity(address, requestErrorNombre, String.class);
             ResponseEntity<String> resultVacioNombre = this.restTemplate.postForEntity(address, requestVacioNombre, String.class);
             ResponseEntity<String> resultErrorDNI = this.restTemplate.postForEntity(address, requestErrorDNI, String.class);
             ResponseEntity<String> resultErrorTelefono = this.restTemplate.postForEntity(address, requestErrorTelefono, String.class);
-
-            then(resultCorrecto.getStatusCode()).isEqualTo(HttpStatus.OK);
+            
+            then(resultErrorDNI.getBody()).contains("Hemos tenido un problema con su solicitud");
+            then(resultErrorTelefono.getBody()).contains("Hemos tenido un problema con su solicitud");
+            
             then(resultErrorNombre.getStatusCode()).isEqualTo(HttpStatus.OK);
             then(resultVacioNombre.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
             then(resultErrorDNI.getStatusCode()).isEqualTo(HttpStatus.OK);
             then(resultErrorTelefono.getStatusCode()).isEqualTo(HttpStatus.OK);
-
-
     }
 }
 

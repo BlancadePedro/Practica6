@@ -111,11 +111,9 @@ public class ProcessControllerTest {
             datosNombreIncorrecto.add("dni", "52060398J");
             datosNombreIncorrecto.add("telefono", "646513445");
 
-            //El nombre vacío
-            MultiValueMap<String, String> datosNombreNull = new LinkedMultiValueMap<>();
-            datosNombreIncorrecto.add("fullName", "");
-            datosNombreIncorrecto.add("dni", "52060398J");
-            datosNombreIncorrecto.add("telefono", "646513445");
+            //El vacío
+            MultiValueMap<String, String> datosVacio = new LinkedMultiValueMap<>();
+            
 
             //El DNI introducido es incorrecto
             MultiValueMap<String, String> datosDNIIncorrecto = new LinkedMultiValueMap<>();
@@ -134,12 +132,12 @@ public class ProcessControllerTest {
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
             HttpEntity<MultiValueMap<String, String>> requestErrorNombre = new HttpEntity<>(datosNombreIncorrecto, headers);
-            HttpEntity<MultiValueMap<String, String>> requestVacioNombre = new HttpEntity<>(datosNombreNull, headers);
+            HttpEntity<MultiValueMap<String, String>> requestVacio = new HttpEntity<>(datosVacio, headers);
             HttpEntity<MultiValueMap<String, String>> requestErrorDNI = new HttpEntity<>(datosDNIIncorrecto, headers);
             HttpEntity<MultiValueMap<String, String>> requestErrorTelefono = new HttpEntity<>(datosNumeroIncorrecto, headers);
             //Response
             ResponseEntity<String> resultErrorNombre = this.restTemplate.postForEntity(address, requestErrorNombre, String.class);
-            ResponseEntity<String> resultVacioNombre = this.restTemplate.postForEntity(address, requestVacioNombre, String.class);
+            ResponseEntity<String> resultVacio = this.restTemplate.postForEntity(address, requestVacio, String.class);
             ResponseEntity<String> resultErrorDNI = this.restTemplate.postForEntity(address, requestErrorDNI, String.class);
             ResponseEntity<String> resultErrorTelefono = this.restTemplate.postForEntity(address, requestErrorTelefono, String.class);
             
@@ -147,7 +145,7 @@ public class ProcessControllerTest {
             then(resultErrorTelefono.getBody()).contains("Hemos tenido un problema con su solicitud");
             
             then(resultErrorNombre.getStatusCode()).isEqualTo(HttpStatus.OK);
-            then(resultVacioNombre.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+            then(resultVacio.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
             then(resultErrorDNI.getStatusCode()).isEqualTo(HttpStatus.OK);
             then(resultErrorTelefono.getStatusCode()).isEqualTo(HttpStatus.OK);
     }

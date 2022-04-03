@@ -7,38 +7,27 @@ Dado un desarrollo de Spring Boot, es necesario anhadir tests a las siguientes c
 - DNI & Telefono (Unit Tests) (Cada clase tiene un metodo y varias casuisticas para probar)
 - ProcessController (E2E Tests) (2 endpoints)
 
-```
-mvn clean spring-boot:run
 
-curl -v -X POST http://localhost:8080/api/v1/process-step1-legacy \
-   -H "Content-Type: application/x-www-form-urlencoded" \
-   -d "fullName=Juan%20Antonio%20Brena%20Moral&dni=12345678Z&telefono=%2B34%20600903434"
+## Pruebas jUnit
 
-curl -v -X POST http://localhost:8080/api/v1/process-step1 \
-   -H 'Content-Type: application/json' \
-   -d '{"fullName":"Juan Antonio Brena Moral","dni":"12345678Z", "telefono":"+34 600903434"}'
-```
+En la carpeta "model" del directorio correspondiente a los Test se contrarán dos ficheros: "DNITest.java" y "TelefonoTest.java", donde se han desarrollado las pruebas convenientes.
 
-## Entrega
+# Pruebas DNI
+Se van a realizar cinco pruebas con cinco DNIs distintos. El primero cumple todos los requisitos que debe tener (ocho números y el último una letra), el segundo es erróneo ya que son solo números ("123456789") y los tres últimos corresponden a los modelos inválidos. Mediante la función validar() se comprueba que solo el primero devuelva true, mientras que el resto false.
 
-Sube la practica solucionada a un repositorio de Github.
-y crea un documento en formato Markdown, explicando las casuisticas que se van a probar.
+# Pruebas Teléfono
+Se van a realizar varias pruebas con distintos números de teléfono para verificar si se aceptan números tanto con prefijo como sin prefijo. A su vez, se han introducido dos ejemplos que no cumplen con las especificaciones ya que contienen una letra o son demasiado largos. Para estos últimos la función validar() devuelve false, mientras que los ejemplos que se suponen validos dicha función dvuelve true, confirmando lo esperado.
 
-## Criterios de evaluación
 
-- 0 -> 5
-    - Entregar en fecha
-    - Subir ejemplo a Github
-    - Ejemplo funcional
-    - Aparentemente funciona
-    - Con README
-- 5 -> 9
-    - La práctica entregada hace lo que se pide
-- 9 -> 10
-    - El alumno explora la materia y añade elementos adicionales
+## Pruebas End to End
 
-**Nota:** Si el alumno no entrega a tiempo la practica, la calificacion maxima
-sera de un 5 si el retraso es de una semana y no presentado si el retraso es major.
+Se va a validar que la clase ProcessControllerTest.java, localizada en la carpeta "controller" del directorio correspondiente a los Test, funcione adecuadaente. Para ello, se va a verificar el status y el cuerpo de la respuesta correspondiente a cada caso. Se han realizado dos tipos de pruebas distintas, comprobando si la respuesta es correcta (ok) o no (ko), teniendo un total de cuatro @Test.
+
+- Se comprueba que al enviar unos datos supuestos correctos la respuesta obtenida es "OK", tanto del cuerpo como de Status.
+- A su vez, se introducen un DNI y un número de teléfono erróneos al no cumplir con las especificaciones del jUnit, pero que no son nulos. Por ello, el cuerpo que se va a obtener es igual a KO, pero el status es OK.
+- Por otro lado, se va comprobar que al enviar una serie de datos el mensaje HTML que se reciba es el correspondiente, mediante la función .contains(). 
+- Finalemnte, para obtener un status BAD_REQUEST se ha enviado un MultiValueMap con un nombre nulo. 
+
 
 ## References
 

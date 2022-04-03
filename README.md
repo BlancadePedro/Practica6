@@ -29,7 +29,7 @@ Se va a validar que la clase ProcessControllerTest.java, localizada en la carpet
 - Se comprueba que al enviar unos datos supuestos correctos la respuesta obtenida es "OK", tanto del cuerpo como de Status.
 - A su vez, se introducen un DNI y un número de teléfono erróneos al no cumplir con las especificaciones del jUnit, pero que no son nulos. Por ello, el cuerpo que se va a obtener es igual a KO, pero el status es OK.
 - Por otro lado, se va comprobar que al enviar una serie de datos el mensaje HTML que se reciba es el correspondiente, mediante la función .contains(). 
-- Finalemnte, para obtener un status BAD_REQUEST se ha enviado un MultiValueMap con un nombre nulo. 
+- Finalemnte, para obtener un status BAD_REQUEST se ha enviado un MultiValueMap vacío. 
 
 
 ## References
